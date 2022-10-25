@@ -21,6 +21,8 @@ set(PROJECT_SOURCES
         toneslider.ui
 	sineloop.cpp
 	sineloop.h
+	mainwindow.h
+	mainwindow.cpp
 )
 
 # Handle stk includes and macros

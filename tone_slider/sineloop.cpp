@@ -18,6 +18,7 @@ SineLoop::SineLoop()
 
 SineLoop::~SineLoop()
 {
+    stop_audio();
     delete dac;
 }
 
@@ -53,8 +54,8 @@ void SineLoop::__audio_worker(void)
         try
         {
             dac->tick(sine.tick());
-            if (counter++ % 441 == 0)
-                std::cout << sine_frequency << std::endl;
+            //if (counter++ % 441 == 0)
+            //    std::cout << sine_frequency << std::endl;
         }
         catch(StkError&)
         {
