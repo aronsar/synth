@@ -23,6 +23,10 @@ set(PROJECT_SOURCES
 	sineloop.h
 	mainwindow.h
 	mainwindow.cpp
+	instrumentslider.h
+	instrumentslider.cpp
+	instrumentplayer.h
+	instrumentplayer.cpp
 )
 
 # Handle stk includes and macros
