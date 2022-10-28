@@ -40,6 +40,8 @@ add_definitions(-D__WINDOWS_MM__)
 link_libraries(dsound)
 add_definitions(-D__WINDOWS_DS__)
 
+add_definitions(-D_STK_DEBUG_)
+
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(tone_slider
         MANUAL_FINALIZATION

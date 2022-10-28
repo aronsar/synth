@@ -21,11 +21,17 @@ public:
     ~InstrumentSlider();
 
 private slots:
-    void instrument_combo_box_current_index_changed(int);
+    void instrument_combo_box_current_index_changed(int new_index);
+    void freq_horizontal_slider_value_changed(int new_val);
+    void freq_line_edit_text_edited(QString new_text);
+    void freq_line_edit_editing_finished();
+    void play_button_clicked();
 
 private:
     Ui::InstrumentSlider *ui;
     InstrumentPlayer *ip;
+    QString freq_line_edit_string = "";
+    bool currently_playing = false;
 };
 
 #endif // INSTRUMENTSLIDER_H

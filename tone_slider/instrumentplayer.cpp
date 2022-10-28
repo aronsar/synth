@@ -1,38 +1,37 @@
 #include "instrumentplayer.h"
+#include "BeeThree.h"
 
 using namespace stk;
 
 // This tick() function handles sample computation only.  It will be
 // called automatically when the system needs a new buffer of audio
 // samples.
-int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
+
+//int tick_counter = 0;
+
+int tick( void *_outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
          double streamTime, RtAudioStreamStatus status, void *userData )
 {
-  TickData *data = (TickData *) userData;
-  StkFloat *samples = (StkFloat *) outputBuffer;
+    Instrmnt *instrument = (Instrmnt *) userData;
+    StkFloat *outputBuffer = (StkFloat *) _outputBuffer;
 
-  for ( unsigned int i=0; i<nBufferFrames; i++ ) {
-    *samples++ = data->instrument->tick();
-    if ( ++data->counter % 2000 == 0 ) {
-      data->scaler += 0.025;
-      data->instrument->setFrequency( data->frequency * data->scaler );
+    for ( unsigned int i=0; i<nBufferFrames; i++ ) {
+//        if (tick_counter++ % 44100 == 0)
+//        {
+//            std::cout << "tick" << std::endl;
+//        }
+        *outputBuffer++ = instrument->tick();
     }
-  }
-
-  if ( data->counter > 80000 )
-    data->done = true;
-
-  return 0;
+    return 0;
 }
 
 
 InstrumentPlayer::InstrumentPlayer()
 {
     Stk::setSampleRate(44100);
-    Stk::setRawwavePath( "../stk/rawwaves/" );
+    Stk::setRawwavePath( "../../stk/rawwaves/" );
 
-    TickData data;
-    RtAudio dac;
+    //RtAudio dac;
 
     // Figure out how many bytes in an StkFloat and setup the RtAudio stream.
     RtAudio::StreamParameters parameters;
@@ -40,41 +39,58 @@ InstrumentPlayer::InstrumentPlayer()
     parameters.nChannels = 1;
     RtAudioFormat format = ( sizeof(StkFloat) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
     unsigned int bufferFrames = RT_BUFFER_SIZE;
+    instrument = new BeeThree();
+    this->frequency = 440;
+    //instrument->setFrequency(this->frequency);
 
     try
     {
-        dac.openStream( &parameters, NULL, format, (unsigned int)Stk::sampleRate(), &bufferFrames, &tick, (void *)&data );
+        dac.openStream( &parameters, NULL, format, (unsigned int)Stk::sampleRate(), &bufferFrames, &tick, (void *)instrument );
     }
     catch ( RtAudioError& error )
     {
         error.printMessage();
     }
-
-    data.instrument = new BeeThree();
-    data.frequency = 200;
 }
 
 void InstrumentPlayer::set_voicer(Voicer *_voicer)
 {
-    if (_voicer)
-        this->voicer = _voicer;
-    else
-        this->voicer = new Voicer();
+//    if (_voicer)
+//        this->voicer = _voicer;
+//    else
+//        this->voicer = new Voicer();
 }
 
 void InstrumentPlayer::start_audio(void)
 {
-
+    try
+    {
+        instrument->noteOn(220.0, 0.5);
+        dac.startStream();
+    }
+    catch ( RtAudioError &error )
+    {
+        error.printMessage();
+    }
 }
 
 void InstrumentPlayer::stop_audio(void)
 {
-
+    try
+    {
+        instrument->noteOff(0.5);
+        dac.stopStream();
+    }
+      catch ( RtAudioError &error )
+    {
+        error.printMessage();
+    }
 }
 
 void InstrumentPlayer::set_frequency(int frequency)
 {
-
+    this->frequency = frequency;
+    instrument->setFrequency(frequency);
 }
 
 void InstrumentPlayer::set_bpm(int bpm)
@@ -85,5 +101,5 @@ void InstrumentPlayer::set_bpm(int bpm)
 
 InstrumentPlayer::~InstrumentPlayer()
 {
-    delete data.instrument;
+    delete instrument;
 }

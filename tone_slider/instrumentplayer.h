@@ -3,30 +3,17 @@
 
 #include <unordered_map>
 #include "Voicer.h"
-#include "BeeThree.h"
 #include "RtAudio.h"
-#include "Saxofony.h"
+//#include "Saxofony.h"
 #include "Instrmnt.h"
 #include <QString>
 
 using namespace stk;
 
-std::unordered_map<QString, *Instrmnt> available_instruments =
-{
-    {"Saxofony", Saxofony}
-}
-
-struct TickData {
-  Instrmnt *instrument;
-  StkFloat frequency;
-  StkFloat scaler;
-  long counter;
-  bool done;
-
-  // Default constructor.
-  TickData()
-    : instrument(0), scaler(1.0), counter(0), done( false ) {}
-};
+//std::unordered_map<QString, *Instrmnt> available_instruments =
+//{
+//    {"Saxofony", Saxofony}
+//}
 
 class InstrumentPlayer
 {
@@ -41,9 +28,9 @@ public:
 
 
 private:
-    TickData data;
     RtAudio dac;
-    Voicer *voicer;
+    Instrmnt *instrument;
+    int frequency;
 };
 
 #endif // INSTRUMENTPLAYER_H
