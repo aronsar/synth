@@ -34,13 +34,24 @@ include_directories("../stk/include")
 file(GLOB STK_SOURCES ../stk/src/*.cpp)
 file(GLOB STK_DRIVERS ../stk/src/include/*)
 
+set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+    set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+    find_package(Threads REQUIRED)
+    link_libraries(Threads::Threads)
+
 link_libraries(winmm ole32 wsock32)
 add_definitions(-D__WINDOWS_MM__)
 
 link_libraries(dsound)
 add_definitions(-D__WINDOWS_DS__)
 
-add_definitions(-D_STK_DEBUG_)
+#add_definitions(-D_STK_DEBUG_)
+
+include(TestBigEndian)
+TEST_BIG_ENDIAN(IS_BIG_ENDIAN)
+if(NOT IS_BIG_ENDIAN)
+  add_definitions(-D__LITTLE_ENDIAN__)
+endif()
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(tone_slider
