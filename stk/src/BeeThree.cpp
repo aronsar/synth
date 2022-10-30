@@ -54,10 +54,10 @@ BeeThree :: BeeThree( void )
   gains_[2] = fmGains_[99];
   gains_[3] = fmGains_[95];
 
-  adsr_[0]->setAllTimes( 0.005, 0.003, 1.0, 0.01 );
-  adsr_[1]->setAllTimes( 0.005, 0.003, 1.0, 0.01 );
-  adsr_[2]->setAllTimes( 0.005, 0.003, 1.0, 0.01 );
-  adsr_[3]->setAllTimes( 0.005, 0.001, 0.4, 0.03 );
+  adsr_[0]->setAllTimes( 0.005, 0.03, 0.5, 0.05 );
+  adsr_[1]->setAllTimes( 0.005, 0.03, 0.5, 0.05 );
+  adsr_[2]->setAllTimes( 0.005, 0.03, 0.5, 0.05 );
+  adsr_[3]->setAllTimes( 0.005, 0.01, 0.4, 0.05 );
 
   twozero_.setGain( 0.1 );
 }  
