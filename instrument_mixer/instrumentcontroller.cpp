@@ -38,6 +38,14 @@ InstrumentController::InstrumentController(QWidget *parent) :
 
     // set up instrument selector combo box
     ui->instrument_combo_box->addItem("BeeThree");
+    ui->instrument_combo_box->addItem("Saxofony");
+    ui->instrument_combo_box->addItem("Plucked");
+    ui->instrument_combo_box->addItem("Bowed");
+    ui->instrument_combo_box->addItem("Brass");
+    ui->instrument_combo_box->addItem("Flute");
+    ui->instrument_combo_box->addItem("Recorder");
+    ui->instrument_combo_box->addItem("Sitar");
+    ui->instrument_combo_box->addItem("Whistle");
     connect(ui->instrument_combo_box, SIGNAL(currentIndexChanged(int)), this, SLOT(instrument_combo_box_current_index_changed(int)));
 
     // set up play button
@@ -52,7 +60,7 @@ InstrumentController::InstrumentController(QWidget *parent) :
 
 void InstrumentController::instrument_combo_box_current_index_changed(int new_index)
 {
-    // select new instrument from instruments list
+    ip->set_instrument(new_index);
 }
 
 void InstrumentController::volume_dial_value_changed(int new_val)

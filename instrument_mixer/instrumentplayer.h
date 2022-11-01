@@ -1,20 +1,12 @@
 #ifndef INSTRUMENTPLAYER_H
 #define INSTRUMENTPLAYER_H
 
-#include <unordered_map>
-#include "Voicer.h"
 #include "RtAudio.h"
-//#include "Saxofony.h"
 #include "Instrmnt.h"
 #include <QString>
 #include <thread>
 
 using namespace stk;
-
-//std::unordered_map<QString, *Instrmnt> available_instruments =
-//{
-//    {"Saxofony", Saxofony}
-//}
 
 class InstrumentPlayer
 {
@@ -27,10 +19,12 @@ public:
     void set_volume(float volume);
     void set_bpm(int bpm);
     void play_duration_note();
+    void set_instrument(int idx);
 
 
 private:
     RtAudio dac;
+    Instrmnt *instruments[9];
     Instrmnt *instrument;
     int frequency;
     float volume;
