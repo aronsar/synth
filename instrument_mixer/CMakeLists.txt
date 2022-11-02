@@ -22,8 +22,6 @@ set(PROJECT_SOURCES
 	instrumentcontroller.cpp
 	instrumentcontroller.h
 	instrumentcontroller.ui
-	instrumentplayer.cpp
-	instrumentplayer.h
 )
 
 # Handle stk includes and macros

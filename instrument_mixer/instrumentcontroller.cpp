@@ -1,10 +1,65 @@
 #include "instrumentcontroller.h"
+#include "Bowed.h"
+#include "Brass.h"
+#include "Clarinet.h"
+#include "Flute.h"
+#include "Mandolin.h"
+#include "Plucked.h"
+#include "Recorder.h"
+#include "Resonate.h"
+#include "Saxofony.h"
+#include "Sitar.h"
+#include "Whistle.h"
 #include "ui_instrumentcontroller.h"
+#include "Voicer.h"
+
+std::map<int, QString> InstrumentNameMap {
+    {BOWED, "Bowed"},
+    {BRASS, "Brass"},
+    {CLARINET, "Clarinet"},
+    {FLUTE, "Flute"},
+    {MANDOLIN, "Mandolin"},
+    {PLUCKED, "Plucked"},
+    {RECORDER, "Recorder"},
+    {RESONATE, "Resonate"},
+    {SAXOFONY, "Saxofony"},
+    {SITAR, "Sitar"},
+    {WHISTLE, "Whistle"},
+};
+
+Instrmnt *create_instrument(int instrument_index)
+{
+    switch (instrument_index)
+    {
+    case BOWED:
+        return new Bowed();
+    case BRASS:
+        return new Brass();
+    case CLARINET:
+        return new Clarinet();
+    case FLUTE:
+        return new Flute(220);
+    case MANDOLIN:
+        return new Mandolin(220);
+    case PLUCKED:
+        return new Plucked();
+    case RECORDER:
+        return new Recorder();
+    case RESONATE:
+        return new Resonate();
+    case SAXOFONY:
+        return new Saxofony(220);
+    case SITAR:
+        return new Sitar();
+    case WHISTLE:
+        return new Whistle();
+    }
+}
+
 
 InstrumentController::InstrumentController(QWidget *parent) :
     QWidget(parent)
     , ui(new Ui::InstrumentController)
-    , ip(new InstrumentPlayer)
 {
     ui->setupUi(this);
 
@@ -37,42 +92,61 @@ InstrumentController::InstrumentController(QWidget *parent) :
     connect(ui->bpm_line_edit, SIGNAL(editingFinished()), this, SLOT(bpm_line_edit_editing_finished()));
 
     // set up instrument selector combo box
-    ui->instrument_combo_box->addItem("BeeThree");
-    ui->instrument_combo_box->addItem("Saxofony");
-    ui->instrument_combo_box->addItem("Plucked");
-    ui->instrument_combo_box->addItem("Bowed");
-    ui->instrument_combo_box->addItem("Brass");
-    ui->instrument_combo_box->addItem("Flute");
-    ui->instrument_combo_box->addItem("Recorder");
-    ui->instrument_combo_box->addItem("Sitar");
-    ui->instrument_combo_box->addItem("Whistle");
+    for (int i = 0; i < NUM_INSTRUMENTS; i++)
+        ui->instrument_combo_box->addItem(InstrumentNameMap[i]);
+    ui->instrument_combo_box->setCurrentIndex(DEFAULT_INSTRUMENT);
     connect(ui->instrument_combo_box, SIGNAL(currentIndexChanged(int)), this, SLOT(instrument_combo_box_current_index_changed(int)));
 
     // set up play button
     connect(ui->play_button, SIGNAL(clicked()), this, SLOT(play_button_clicked()));
 
-    // set up instrument player
-    float float_volume = (float)(DEFAULT_VOLUME - MIN_VOLUME) / (float)(MAX_VOLUME - MIN_VOLUME);
-    ip->set_volume(float_volume);
-    ip->set_frequency(DEFAULT_FREQUENCY);
-    ip->set_bpm(DEFAULT_BPM);
+    // set up instrument
+    current_instrument = create_instrument(DEFAULT_INSTRUMENT);
+    this->frequency = DEFAULT_FREQUENCY;
+    this->bpm = DEFAULT_BPM;
+    this->currently_playing = false;
+    this->amplitude = convert_dial_volume_to_voicer_amplitude(DEFAULT_VOLUME);
 }
 
-void InstrumentController::instrument_combo_box_current_index_changed(int new_index)
+InstrumentController::~InstrumentController()
 {
-    ip->set_instrument(new_index);
+    delete ui;
+    delete current_instrument;
+}
+
+void InstrumentController::set_group(int _group)
+{
+    this->group = _group;
+}
+
+void InstrumentController::set_voicer(Voicer *_voicer)
+{
+    this->voicer = _voicer;
+    this->voicer->addInstrument(this->current_instrument, this->group);
+}
+
+StkFloat InstrumentController::convert_dial_volume_to_voicer_amplitude(int dial_volume)
+{
+    return 128.0 * (float)(dial_volume - MIN_VOLUME) / (float)(MAX_VOLUME - MIN_VOLUME);
+}
+
+void InstrumentController::instrument_combo_box_current_index_changed(int instrument_index)
+{
+    voicer->removeInstrument(current_instrument);
+    delete current_instrument;
+    current_instrument = create_instrument(instrument_index);
+    voicer->addInstrument(current_instrument);
 }
 
 void InstrumentController::volume_dial_value_changed(int new_val)
 {
-    float float_volume = (float)(new_val - MIN_VOLUME) / (float)(MAX_VOLUME - MIN_VOLUME);
-    ip->set_volume(float_volume);
+    this->amplitude = convert_dial_volume_to_voicer_amplitude(new_val);
 }
 
 void InstrumentController::freq_horizontal_slider_value_changed(int new_val)
 {
     ui->freq_line_edit->setText(QString::number(new_val));
-    ip->set_frequency(new_val);
+    this->frequency = new_val;
 }
 
 void InstrumentController::freq_line_edit_text_edited(QString new_text)
@@ -82,9 +156,8 @@ void InstrumentController::freq_line_edit_text_edited(QString new_text)
 
 void InstrumentController::freq_line_edit_editing_finished()
 {
-    int new_frequency = freq_line_edit_string.toInt();
-    ui->freq_horizontal_slider->setSliderPosition(new_frequency);
-    ip->set_frequency(new_frequency);
+    this->frequency = freq_line_edit_string.toInt();
+    ui->freq_horizontal_slider->setSliderPosition(this->frequency);
 }
 
 void InstrumentController::bpm_line_edit_text_edited(QString new_text)
@@ -94,29 +167,36 @@ void InstrumentController::bpm_line_edit_text_edited(QString new_text)
 
 void InstrumentController::bpm_line_edit_editing_finished()
 {
-    int new_bpm = bpm_line_edit_string.toInt();
-    ip->set_bpm(new_bpm);
+    this->bpm = bpm_line_edit_string.toInt();
 }
 
 void InstrumentController::play_button_clicked()
 {
-    if (this->currently_playing)
+    if (!this->currently_playing)
     {
-        ip->stop_audio();
-        this->currently_playing = false;
-        ui->play_button->setText("PLAY");
+        this->currently_playing = true;
+        ui->play_button->setText("PAUSE");
+        this->note_repeater_thread = std::thread( [this] { __note_repeater(); } );
+
     }
     else
     {
-        ip->start_audio();
-        this->currently_playing = true;
-        ui->play_button->setText("PAUSE");
+        this->currently_playing = false;
+        ui->play_button->setText("PLAY");
+        this->note_repeater_thread.join();
+    }
+}
+
+void InstrumentController::__note_repeater()
+{
+    while(this->currently_playing)
+    {
+        long note_tag = voicer->noteOn(this->frequency, this->amplitude, this->group);
+        int duration_ms = 1000 * 60 / this->bpm - 100; // integer division
+        Stk::sleep(duration_ms);
+        voicer->noteOff(note_tag, this->amplitude);
+        Stk::sleep(100); // time between notes
     }
 }
 
 
-InstrumentController::~InstrumentController()
-{
-    delete ui;
-    delete ip;
-}

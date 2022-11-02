@@ -2,6 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "Voicer.h"
+#include "RtAudio.h"
+
+using namespace stk;
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -17,5 +21,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    Voicer *voicer;
+    RtAudio dac;
 };
 #endif // MAINWINDOW_H
