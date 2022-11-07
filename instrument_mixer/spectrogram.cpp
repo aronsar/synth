@@ -1,6 +1,7 @@
 #include "spectrogram.h"
 #include "ui_spectrogram.h"
 
+
 Spectrogram::Spectrogram(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Spectrogram)

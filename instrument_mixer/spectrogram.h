@@ -3,6 +3,9 @@
 
 #include <QWidget>
 #include <vector>
+#include <Eigen/Dense>
+
+using Eigen::MatrixXd;
 
 namespace Ui {
 class Spectrogram;
@@ -19,7 +22,7 @@ public:
 private:
     Ui::Spectrogram *ui;
 
-    std::vector<std::vector<int>> frequency_graph;
+    MatrixXd frequency_graph;
 };
 
 #endif // SPECTROGRAM_H

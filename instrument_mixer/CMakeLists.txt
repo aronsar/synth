@@ -27,6 +27,8 @@ set(PROJECT_SOURCES
 	spectrogram.ui
 )
 
+include_directories(C:/proj/synth/thirdparty/eigen)
+
 # Handle stk includes and macros
 include_directories("../thirdparty/stk/include")
 file(GLOB STK_SOURCES ../thirdparty/stk/src/*.cpp)
@@ -42,8 +44,6 @@ add_definitions(-D__WINDOWS_MM__)
 
 link_libraries(dsound)
 add_definitions(-D__WINDOWS_DS__)
-
-#add_definitions(-D_STK_DEBUG_)
 
 include(TestBigEndian)
 TEST_BIG_ENDIAN(IS_BIG_ENDIAN)
@@ -63,10 +63,6 @@ endif()
 target_link_libraries(instrument_mixer PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 
 set_target_properties(instrument_mixer PROPERTIES
-    MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
-    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
-    MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
 )
 
