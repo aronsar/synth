@@ -53,6 +53,8 @@ Instrmnt *create_instrument(int instrument_index)
         return new Sitar();
     case WHISTLE:
         return new Whistle();
+    default:
+        exit(0);
     }
 }
 
@@ -135,7 +137,7 @@ void InstrumentController::instrument_combo_box_current_index_changed(int instru
     voicer->removeInstrument(current_instrument);
     delete current_instrument;
     current_instrument = create_instrument(instrument_index);
-    voicer->addInstrument(current_instrument);
+    voicer->addInstrument(this->current_instrument, this->group);
 }
 
 void InstrumentController::volume_dial_value_changed(int new_val)
