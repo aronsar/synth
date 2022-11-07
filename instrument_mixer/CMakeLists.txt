@@ -22,12 +22,15 @@ set(PROJECT_SOURCES
 	instrumentcontroller.cpp
 	instrumentcontroller.h
 	instrumentcontroller.ui
+	spectrogram.cpp
+	spectrogram.h
+	spectrogram.ui
 )
 
 # Handle stk includes and macros
-include_directories("../stk/include")
-file(GLOB STK_SOURCES ../stk/src/*.cpp)
-file(GLOB STK_DRIVERS ../stk/src/include/*)
+include_directories("../thirdparty/stk/include")
+file(GLOB STK_SOURCES ../thirdparty/stk/src/*.cpp)
+file(GLOB STK_DRIVERS ../thirdparty/stk/src/include/*)
 
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
     set(THREADS_PREFER_PTHREAD_FLAG TRUE)
