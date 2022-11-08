@@ -25,6 +25,7 @@ set(PROJECT_SOURCES
 	spectrogram.cpp
 	spectrogram.h
 	spectrogram.ui
+	circularbuffer.hpp
 )
 
 include_directories(C:/proj/synth/thirdparty/eigen)

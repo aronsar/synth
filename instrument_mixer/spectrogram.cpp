@@ -8,7 +8,7 @@ Spectrogram::Spectrogram(QWidget *parent) :
 {
     ui->setupUi(this);
 
-
+    //fft_buffer = new MatrixXd(100,100);
 }
 
 Spectrogram::~Spectrogram()

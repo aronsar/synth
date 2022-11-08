@@ -4,8 +4,31 @@
 #include <QMainWindow>
 #include "Voicer.h"
 #include "RtAudio.h"
+#include "circularbuffer.hpp"
 
 using namespace stk;
+
+struct TickData
+{
+    Voicer *voicer;
+    CircularBuffer<StkFloat> *fft_input_buffer;
+};
+
+int tick( void *_outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
+         double streamTime, RtAudioStreamStatus status, void *userData )
+{
+    TickData *data = (TickData *) userData;
+    StkFloat *outputBuffer = (StkFloat *) _outputBuffer;
+
+    for ( unsigned int i=0; i<nBufferFrames; i++ ) {
+        StkFloat sample = data->voicer->tick();
+        data->fft_input_buffer->put(sample);
+        *outputBuffer++ = sample;
+        //if (!(sample == 0))
+        //    std::cout << sample << std::endl;
+    }
+    return 0;
+}
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -21,7 +44,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    Voicer *voicer;
+    TickData *data;
     RtAudio dac;
 };
 #endif // MAINWINDOW_H

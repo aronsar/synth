@@ -22,7 +22,8 @@ public:
 private:
     Ui::Spectrogram *ui;
 
-    MatrixXd frequency_graph;
+    MatrixXd *fft_input_buffer;
+    int buffer_idx = 0;
 };
 
 #endif // SPECTROGRAM_H
