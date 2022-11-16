@@ -24,8 +24,9 @@ set(PROJECT_SOURCES
 	instrumentcontroller.ui
 	spectrogram.cpp
 	spectrogram.h
-	spectrogram.ui
-	circularbuffer.hpp
+	circularbuffer.h
+	fft.h
+	fft.cpp
 )
 
 include_directories(C:/proj/synth/thirdparty/eigen)

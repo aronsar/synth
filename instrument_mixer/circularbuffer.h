@@ -12,6 +12,7 @@ public:
 
     void put(T item);
     T get();
+    void copy_to(T *dest_buffer, int dest_buffer_size);
     void reset();
     bool empty() const;
     bool full() const;
@@ -58,6 +59,14 @@ template<class T> T CircularBuffer<T>::get()
     tail_ = (tail_ + 1) % max_size_;
 
     return val;
+}
+
+template<class T> void CircularBuffer<T>::copy_to(T *dest_buffer, int dest_buffer_size)
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    for (int i = 0; i < dest_buffer_size; i++)
+        dest_buffer[i] = buf_[(i+tail_) % max_size_];
 }
 
 template<class T> void CircularBuffer<T>::reset()

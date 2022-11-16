@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     tick_data.voicer = new Voicer();
-    tick_data.fft_input_buffer = new CircularBuffer<StkFloat>(100);
+    tick_data.audio_buffer = new CircularBuffer<StkFloat>(100);
 
     ui->instrument_controller_1->set_group(0);
     ui->instrument_controller_2->set_group(1);
@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->instrument_controller_2->set_voicer(tick_data.voicer);
     ui->instrument_controller_3->set_voicer(tick_data.voicer);
 
-    //ui->frequency_grapher->set_fft_input_buffer(tick_data.fft_input_buffer);
+    //ui->spectrogram->set_fft_input_buffer(tick_data.fft_input_buffer);
 
     dac.openStream( &parameters, NULL, format, (unsigned int)Stk::sampleRate(), &bufferFrames, &tick, (void *)&tick_data );
     dac.startStream();
@@ -40,9 +40,10 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    dac.closeStream();
+
     delete ui;
     delete tick_data.voicer;
-    delete tick_data.fft_input_buffer;
-    dac.closeStream();
+    delete tick_data.audio_buffer;
 }
 

@@ -4,17 +4,17 @@
 #include <QMainWindow>
 #include "Voicer.h"
 #include "RtAudio.h"
-#include "circularbuffer.hpp"
+#include "circularbuffer.h"
 
 using namespace stk;
 
 struct TickData
 {
     Voicer *voicer;
-    CircularBuffer<StkFloat> *fft_input_buffer;
+    CircularBuffer<StkFloat> *audio_buffer;
 };
 
-int tick( void *_outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
+inline int tick( void *_outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
          double streamTime, RtAudioStreamStatus status, void *userData )
 {
     TickData *data = (TickData *) userData;
@@ -22,10 +22,8 @@ int tick( void *_outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
 
     for ( unsigned int i=0; i<nBufferFrames; i++ ) {
         StkFloat sample = data->voicer->tick();
-        data->fft_input_buffer->put(sample);
+        data->audio_buffer->put(sample);
         *outputBuffer++ = sample;
-        //if (!(sample == 0))
-        //    std::cout << sample << std::endl;
     }
     return 0;
 }
@@ -44,7 +42,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    TickData *data;
+    TickData tick_data;
     RtAudio dac;
 };
 #endif // MAINWINDOW_H

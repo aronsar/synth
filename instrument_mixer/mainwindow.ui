@@ -7,14 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>792</width>
-    <height>454</height>
+    <height>734</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -35,6 +35,16 @@
      </item>
     </layout>
    </widget>
+   <widget class="Spectrogram" name="openGLWidget">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>420</y>
+      <width>261</width>
+      <height>261</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -54,6 +64,11 @@
    <extends>QWidget</extends>
    <header>instrumentcontroller.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Spectrogram</class>
+   <extends>QOpenGLWidget</extends>
+   <header>spectrogram.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
