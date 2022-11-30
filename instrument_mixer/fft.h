@@ -2,7 +2,14 @@
 #define FFT_H
 
 #include "Stk.h"
+#include <complex>
+#include <iostream>
+#include <valarray>
+
 using namespace stk;
+
+typedef std::complex<double> Complex;
+typedef std::valarray<Complex> CArray;
 
 class FFT
 {
@@ -14,6 +21,7 @@ public:
     int output_buffer_length;
 
     StkFloat *input_buffer;
+    CArray *complex_buffer;
     StkFloat *output_buffer;
 };
 

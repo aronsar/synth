@@ -42,6 +42,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    //QTimer *timer;
     TickData tick_data;
     RtAudio dac;
 };
