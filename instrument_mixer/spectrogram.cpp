@@ -1,9 +1,9 @@
 #include "spectrogram.h"
 #include "qpainter.h"
 
-int AUDIO_BUFFER_LENGTH = 200;
+int AUDIO_BUFFER_LENGTH = 2000;
 int NUM_FREQ_BINS = AUDIO_BUFFER_LENGTH / 2;
-int FREQ_GRAPH_HISTORY_LENGTH = 400;
+int FREQ_GRAPH_HISTORY_LENGTH = 500;
 
 Spectrogram::Spectrogram(QWidget *parent) :
     QWidget(parent)
@@ -41,7 +41,7 @@ void Spectrogram::nextAnimationFrame()
 QColor Spectrogram::convert_fft_output_to_color(StkFloat fft_output_float)
 {
     //std::cout << fft_output_float << std::endl;
-    int b = std::max(0, std::min(255, int(fft_output_float * 255)));
+    int b = std::max(0, std::min(255, int(fft_output_float * 25.5)));
     QColor color = QColor(b, b, b);
     if (not color.isValid())
         exit(0);
@@ -60,7 +60,7 @@ void Spectrogram::copy_fft_output_buffer_to_frequency_graph()
         int w_int = int(w);
         //std::cout << w_int << std::endl;
         double w_rem = w - w_int;
-        int val = (w_rem*fft.output_buffer[w_int] + (1-w_rem)*fft.output_buffer[w_int+1])/2; // modify to geometric mean instead
+        StkFloat val = (w_rem*fft.output_buffer[w_int] + (1-w_rem)*fft.output_buffer[w_int+1])/2; // modify to geometric mean instead
 
         QColor target_color = this->convert_fft_output_to_color(val);
         frequency_graph.setPixelColor(FREQ_GRAPH_HISTORY_LENGTH - 1, y, target_color);
@@ -76,7 +76,7 @@ void Spectrogram::paintEvent(QPaintEvent *)
     this->shift_frequency_graph_columns_one_left();
     this->copy_fft_output_buffer_to_frequency_graph();
 
-    QRect target(0, 0, FREQ_GRAPH_HISTORY_LENGTH, NUM_FREQ_BINS);
+    QRect target(0, 0, FREQ_GRAPH_HISTORY_LENGTH, 500);
     QRect source(0, 0, FREQ_GRAPH_HISTORY_LENGTH, NUM_FREQ_BINS);
 
     painter.drawImage(target, frequency_graph, source);
