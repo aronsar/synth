@@ -12,7 +12,6 @@ enum InstrumentIndexEnum {
     BRASS,
     CLARINET,
     FLUTE,
-    MANDOLIN,
     PLUCKED,
     RECORDER,
     RESONATE,
@@ -34,15 +33,15 @@ class InstrumentController : public QWidget
 {
     Q_OBJECT
 
-    const int MIN_FREQUENCY = 45;
-    const int MAX_FREQUENCY = 93;
-    const int DEFAULT_FREQUENCY = 57;
+    const double MIN_FREQUENCY = 45.0;
+    const double MAX_FREQUENCY = 93.0;
+    const double DEFAULT_FREQUENCY = 57.0;
     const int MIN_VOLUME = 0;
     const int MAX_VOLUME = 11;
     const int DEFAULT_VOLUME = 5;
     const int MIN_BPM = 10;
     const int MAX_BPM = 420;
-    const int DEFAULT_BPM = 180;
+    const int DEFAULT_BPM = 60;
     const int DEFAULT_INSTRUMENT = PLUCKED;
 
 public:
@@ -69,7 +68,7 @@ private:
     Voicer *voicer = nullptr;
     Instrmnt *current_instrument = nullptr;
     StkFloat amplitude;
-    int frequency;
+    double frequency;
     int bpm;
     std::thread note_repeater_thread;
     int group;

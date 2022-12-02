@@ -3,7 +3,6 @@
 #include "Brass.h"
 #include "Clarinet.h"
 #include "Flute.h"
-#include "Mandolin.h"
 #include "Plucked.h"
 #include "Recorder.h"
 #include "Resonate.h"
@@ -18,7 +17,6 @@ std::map<int, QString> InstrumentNameMap {
     {BRASS, "Brass"},
     {CLARINET, "Clarinet"},
     {FLUTE, "Flute"},
-    {MANDOLIN, "Mandolin"},
     {PLUCKED, "Plucked"},
     {RECORDER, "Recorder"},
     {RESONATE, "Resonate"},
@@ -39,8 +37,6 @@ Instrmnt *create_instrument(int instrument_index)
         return new Clarinet();
     case FLUTE:
         return new Flute(220);
-    case MANDOLIN:
-        return new Mandolin(220);
     case PLUCKED:
         return new Plucked();
     case RECORDER:
@@ -66,9 +62,9 @@ InstrumentController::InstrumentController(QWidget *parent) :
     ui->setupUi(this);
 
     // setup frequency slider
-    ui->freq_horizontal_slider->setMinimum(MIN_FREQUENCY);
-    ui->freq_horizontal_slider->setMaximum(MAX_FREQUENCY);
-    ui->freq_horizontal_slider->setSliderPosition(DEFAULT_FREQUENCY);
+    ui->freq_horizontal_slider->setMinimum(int(MIN_FREQUENCY*100));
+    ui->freq_horizontal_slider->setMaximum(int(MAX_FREQUENCY*100));
+    ui->freq_horizontal_slider->setSliderPosition(int(DEFAULT_FREQUENCY*100));
     ui->freq_min_label->setText(QString::number(MIN_FREQUENCY));
     ui->freq_max_label->setText(QString::number(MAX_FREQUENCY));
     connect(ui->freq_horizontal_slider, SIGNAL(valueChanged(int)), this, SLOT(freq_horizontal_slider_value_changed(int)));
@@ -87,7 +83,8 @@ InstrumentController::InstrumentController(QWidget *parent) :
     connect(ui->volume_dial, SIGNAL(valueChanged(int)), this, SLOT(volume_dial_value_changed(int)));
 
     // set up bpm line edit
-    QValidator *bpm_validator = new QIntValidator(MIN_BPM, MAX_BPM, this);
+    int num_decimals = 2;
+    QValidator *bpm_validator = new QDoubleValidator(MIN_BPM, MAX_BPM, num_decimals, this);
     ui->bpm_line_edit->setValidator(bpm_validator);
     ui->bpm_line_edit->setText(QString::number(DEFAULT_BPM));
     connect(ui->bpm_line_edit, SIGNAL(textEdited(QString)), this, SLOT(bpm_line_edit_text_edited(QString)));
@@ -147,8 +144,9 @@ void InstrumentController::volume_dial_value_changed(int new_val)
 
 void InstrumentController::freq_horizontal_slider_value_changed(int new_val)
 {
-    ui->freq_line_edit->setText(QString::number(new_val));
-    this->frequency = new_val;
+    ui->freq_line_edit->setText(QString::number((double)new_val / 100.0));
+    this->frequency = (double)new_val / 100.0;
+    voicer->setFrequency(this->frequency, this->group);
 }
 
 void InstrumentController::freq_line_edit_text_edited(QString new_text)
@@ -158,8 +156,9 @@ void InstrumentController::freq_line_edit_text_edited(QString new_text)
 
 void InstrumentController::freq_line_edit_editing_finished()
 {
-    this->frequency = freq_line_edit_string.toInt();
+    this->frequency = freq_line_edit_string.toDouble();
     ui->freq_horizontal_slider->setSliderPosition(this->frequency);
+    voicer->setFrequency(this->frequency, this->group);
 }
 
 void InstrumentController::bpm_line_edit_text_edited(QString new_text)
